@@ -4,6 +4,6 @@ name: ci
 
 steps:
 - name: greetings
-  image: alpine
+  image: ubuntu
   commands:
   - env
