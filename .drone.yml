@@ -1,8 +1,30 @@
 kind: pipeline
-name: default
+type: kubernetes
+name: ci
 
 steps:
-- name: greetings
-  image: alpine
-  commands:
-  - env
+  - name: print_version
+    image: ubuntu:latest
+    commands:
+      - echo VERSION=${DRONE_TAG#v}
+      - echo VERSION_TAG=${DRONE_REPO}:${DRONE_TAG#v}
+      - echo LATEST_TAG=${DRONE_REPO}:latest
+      - echo REPO=${DRONE_REPO}
+
+  - name: build
+    image: golang
+    commands:
+      - go get
+      - go build
+
+  - name: publish
+    image: plugins/docker
+    depends_on:
+      - build
+    settings:
+      # auto_tag: true
+      username: natthawutsae
+      password: dckr_pat_4hTGWEsUP4-Owr0FRGVU26kV_ps
+      repo: natthawutsae/go-app
+      tags:
+        - ${DRONE_TAG#v}
